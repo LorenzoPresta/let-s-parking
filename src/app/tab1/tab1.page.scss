@@ -1,0 +1,11 @@
+.welcome-card img {
+  max-height: 55vh;
+  overflow: hidden;
+}
+
+ion-toolbar {
+  --background: transparent no-repeat fixed center;
+  --color: black;
+  position: absolute;
+  top: 0;
+}
