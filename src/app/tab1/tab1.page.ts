@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 
 import { loadModules, setDefaultOptions } from 'esri-loader';
-import { version } from 'typescript';
 
 @Component({
   selector: 'app-tab1',
@@ -10,15 +10,33 @@ import { version } from 'typescript';
 })
 export class Tab1Page implements OnInit {
   username: string;
+  mapLoaded: boolean;
+  lat = 0;
+  lng = 0;
   @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
 
-  constructor() {
+  constructor(private geolocation: Geolocation) {
     this.username = 'Paonessa';
   }
   ngOnInit() {
-    this.loadMap(4.18);
+    this.getUserPosition();
+    this.mapLoaded = false;
+    setTimeout(() => {
+      this.loadMap(4.18);
+    }, 3000);
   }
-
+  getUserPosition() {
+    this.geolocation
+      .getCurrentPosition()
+      .then((resp) => {
+        this.lat = resp.coords.latitude;
+        this.lng = resp.coords.longitude;
+        console.log(this.lat, this.lng);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }
   loadMap(version) {
     setDefaultOptions({ version });
     loadModules([
@@ -34,8 +52,8 @@ export class Tab1Page implements OnInit {
       let view = new MapView({
         container: this.mapViewEl.nativeElement,
         map: map,
-        zoom: 10,
-        center: [16.253, 39.295],
+        zoom: 15,
+        center: [this.lng, this.lat],
         ui: {
           components: ['attribution'],
         },
@@ -44,8 +62,8 @@ export class Tab1Page implements OnInit {
       var pointGraphic1 = new Graphic({
         geometry: {
           type: 'point',
-          longitude: 16,
-          latitude: 39,
+          longitude: this.lng,
+          latitude: this.lat,
         },
         symbol: {
           type: 'simple-marker',
@@ -56,30 +74,17 @@ export class Tab1Page implements OnInit {
           },
         },
       });
-      var pointGraphic2 = new Graphic({
-        geometry: {
-          type: 'point',
-          longitude: -51,
-          latitude: 41,
-        },
-        symbol: {
-          type: 'simple-marker',
-          color: [226, 119, 40],
-          outline: {
-            color: [255, 255, 255],
-            width: 2,
-          },
-        },
-      });
 
       var graphicsLayer = new GraphicsLayer();
       map.add(graphicsLayer);
-
+      setTimeout(() => {
+        this.mapLoaded = true;
+      }, 1000);
       view.when(() => {
         view.graphics.add(pointGraphic1);
         view.popup.actions = [];
-        graphicsLayer.addMany([pointGraphic2]);
-        console.log('component.loaded');
+        // graphicsLayer.addMany([pointGraphic2]);
+        console.log('mapLoaded.loadedSuccess');
       });
     });
   }

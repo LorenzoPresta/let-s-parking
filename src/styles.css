@@ -1,2 +1,5 @@
 /* Add application styles & imports to this file! */
-@import "~@ionic/angular/css/ionic.bundle.css";
+@import '~@ionic/angular/css/ionic.bundle.css';
+ion-content {
+  --ion-background-color: #2b2b28 !important;
+}

@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 export class TabsPage {
   constructor() {}
   ionViewDidEnter() {
-    if (!!document.querySelector('#tab-button-tab3')) {
+    if (!document.querySelector('#tab-button-tab3')) {
       document
         .querySelector('#tab-button-tab3')
         .shadowRoot.querySelector('.button-native')

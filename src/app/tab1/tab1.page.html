@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [hidden]="!mapLoaded">
   <ion-toolbar text-center>
     <svg
       width="356"
@@ -46,7 +46,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen style="overflow: hidden">
+<ion-content
+  fullscreen
+  style="overflow: hidden"
+  scroll-y="false"
+  [hidden]="!mapLoaded"
+>
   <div
     id="mapViewNode"
     #mapViewNode
