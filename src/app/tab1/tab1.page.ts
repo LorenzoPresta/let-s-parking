@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 
 import { loadModules, setDefaultOptions } from 'esri-loader';
+import { ArcgisApiService } from '../service/arcgis-apiservice.service';
 
 @Component({
   selector: 'app-tab1',
@@ -13,18 +14,43 @@ export class Tab1Page implements OnInit {
   mapLoaded: boolean;
   lat = 0;
   lng = 0;
+  sceneView: any;
+
   @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
 
-  constructor(private geolocation: Geolocation) {
+  constructor(
+    private geolocation: Geolocation,
+    private arcgisService: ArcgisApiService
+  ) {
     this.username = 'Paonessa';
   }
   ngOnInit() {
     this.getUserPosition();
     this.mapLoaded = false;
     setTimeout(() => {
-      this.loadMap(4.18);
+      this.loadMap(4.17);
     }, 3000);
   }
+
+  test() {
+    this.arcgisService.loaded$.subscribe((loaded) => {
+      if (loaded) {
+        this.arcgisService
+          .constructMap({ basemap: 'streets-night-vector', elevation: false })
+          .then((map) => {
+            this.arcgisService
+              .constructSceneView({
+                map: map,
+                container: 'mapViewNode',
+                center: [this.lng, this.lat],
+                zoom: 18,
+              })
+              .then((sceneView) => (this.sceneView = sceneView));
+          });
+      }
+    });
+  }
+
   getUserPosition() {
     this.geolocation
       .getCurrentPosition()
@@ -37,6 +63,7 @@ export class Tab1Page implements OnInit {
         alert(error);
       });
   }
+
   loadMap(version) {
     setDefaultOptions({ version });
     loadModules([
